@@ -1,0 +1,15 @@
+drop table USER_gameInfo;
+drop table TRADE;
+drop table ACCOUNT_RECOVER;
+drop table USER_Privacy;
+drop table AcctUSER;
+drop table POINT_SYSTEM;
+drop table GameRULES;
+drop table ROUNDS;
+drop table SEASONS;
+drop table TeamLeague; 
+drop table TEAMS;
+drop table LEAGUES;
+drop table PLAYER_Team;
+drop table PLAYER_STATS;
+drop table PLAYER_GameInfo;
