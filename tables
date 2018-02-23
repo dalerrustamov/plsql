@@ -1,0 +1,219 @@
+--1
+CREATE TABLE AcctUSER
+(
+  Username varchar2(30) PRIMARY KEY,
+  Email_address varchar2(40) NOT NULL,
+  Phone_number varchar2(16), --example: +1-324-435-3453
+  Preferred_contact number(1) NOT NULL, -- 0 or 1, 0:email, 1:phone#
+  CONSTRAINT check_Preferred_contact
+  CHECK (Preferred_contact BETWEEN 0 and 1),
+  Age number(2) NOT NULL
+);
+
+--2
+CREATE TABLE USER_Privacy
+(
+Username varchar2(30) PRIMARY KEY,
+    constraint Username_Usr_Privacy
+    FOREIGN KEY (Username) references AcctUSER(Username),
+UsrPassword varchar2(64) NOT NULL,
+PswSalt varchar2(50) NOT NULL,
+Last_modified date NOT NULL,
+Last_saved date NOT NULL,
+Last_exit date NOT NULL,
+Currently_active number(1) NOT NULL --0 or 1
+  CONSTRAINT check_Currently_active
+  CHECK (Currently_active BETWEEN 0 and 1)
+);
+
+
+--3
+CREATE TABLE USER_gameInfo
+(
+Username varchar2(30) PRIMARY KEY,
+    constraint Username_USER_gameInfo
+    FOREIGN KEY (Username) references AcctUSER (Username),
+Team_picked number(6) NOT NULL,
+    constraint Team_picked_USER_gameInfo
+    FOREIGN KEY (Team_picked) references TEAMS(Team_id),
+User_points number(4) NOT NULL, 
+User_roundPoints number(4) NOT NULL,
+User_wins number(3) NOT NULL,
+User_losses number(3) NOT NULL,
+User_CurrentBudget number(9) NOT NULL
+);
+
+
+--4
+CREATE TABLE ACCOUNT_RECOVER
+(
+Request_ID number(6) PRIMARY KEY, 
+Username varchar2(30) NOT NULL,
+    constraint Username_ACCOUNT_RECOVER
+    FOREIGN KEY (Username) references AcctUSER(Username),
+Verif_code number(6) NOT NULL,
+Account_locked number(1) NOT NULL,
+  CONSTRAINT check_Account_locked
+  CHECK (Account_locked BETWEEN 0 and 1),
+Login_attempts number(1) NOT NULL,
+  CONSTRAINT check_Login_attempts
+  CHECK (Login_attempts BETWEEN 0 and 5)
+);
+
+
+--5
+CREATE TABLE PLAYER_STATS 
+(
+Player_id number(6) PRIMARY KEY,
+Player_jersey_Number number(2) NOT NULL, 
+Player_first varchar(50) NOT NULL,
+Player_last varchar(50) NOT NULL,
+Player_height number(3) NOT NULL, --I changed the datatype to number, because the DTB user might wanna sort the players by height 
+Player_weight number(3) NOT NULL, 
+Player_DOB date NOT NULL, 
+Player_nationality varchar2(20) NOT NULL
+);
+
+
+--6
+CREATE TABLE PLAYER_GameInfo
+(
+Player_id number(6) PRIMARY KEY,
+    constraint Player_id_PLAYER_GameInfo
+    FOREIGN KEY (Player_id) references PLAYER_STATS (Player_id),
+Player_position number(1) NOT NULL, 
+    constraint Player_position_cnstr
+    CHECK (Player_position BETWEEN 0 and 3),
+Player_saves number(3) NOT NULL, 
+Player_goals number(3) NOT NULL, 
+Player_cards number(2) NOT NULL, --it only keeps track of current cards, so its either nothing or yellow or red
+    constraint Player_cards_cnstr
+    CHECK (Player_cards BETWEEN 0 and 2),
+Player_games_played number(3) NOT NULL,
+Player_price number(9) NOT NULL, 
+Player_assists number(2) NOT NULL, 
+Player_active number(1) NOT NULL
+    constraint Player_active_cnstr
+    CHECK (Player_active BETWEEN 0 and 1)
+);
+
+
+--7
+CREATE TABLE TEAMS 
+(
+Team_id number(6) PRIMARY KEY, 
+Team_name varchar2(25) NOT NULL, 
+Team_country varchar2(25) NOT NULL, 
+Team_wins number(3) NOT NULL, 
+Team_losses number(3) NOT NULL, 
+Team_goals number(3) NOT NULL, 
+Team_captian varchar2(50) NOT NULL, 
+Team_cocaptain varchar2(50) NOT NULL,
+Team_points number(3) NOT NULL, 
+Team_currentScores number(3) NOT NULL
+);
+
+
+--8
+CREATE TABLE TRADE 
+(
+Trade_id number(6) PRIMARY KEY, 
+Manager1_Username varchar2(30) NOT NULL,
+CONSTRAINT Manager1_Username_TRADE
+FOREIGN KEY (Manager1_Username) references AcctUSER(Username),
+Manager2_Username varchar2(30) NOT NULL,
+CONSTRAINT Manager2_Username_TRADE
+FOREIGN KEY (Manager2_Username) references AcctUSER(Username),
+Player_id number(6) NOT NULL,
+CONSTRAINT Player_id_TRADE
+FOREIGN KEY (Player_id) references PLAYER_STATS(Player_id),
+Money_offered number(9),
+Trade_partner number(6),
+CONSTRAINT Trade_partner_TRADE
+FOREIGN KEY (Trade_partner) references PLAYER_STATS(Player_id),
+AcceptDecline number(1) NOT NULL --0,1,2
+  CONSTRAINT check_AcceptDecline
+  CHECK (AcceptDecline BETWEEN 0 and 2) 
+);
+
+
+--9
+CREATE TABLE GameRULES  
+(
+Event_id number(3) PRIMARY KEY, 
+Event_points number(2) NOT NULL,
+Event_description varchar2(100) NOT NULL
+);
+
+
+--10
+CREATE TABLE LEAGUES   
+(
+League_id number(6) PRIMARY KEY, 
+League_name varchar2(50) NOT NULL
+);
+
+
+--11
+CREATE TABLE SEASONS   
+(
+Season_id number(6) PRIMARY KEY, 
+League_id number(6) NOT NULL,
+constraint League_id_SEASONS
+FOREIGN KEY (League_id) REFERENCES LEAGUES(League_id)
+);
+
+
+--12
+CREATE TABLE ROUNDS   
+(
+Round_id number(6) PRIMARY KEY, 
+Season_id number(6) NOT NULL,
+constraint Season_id_ROUNDS
+FOREIGN KEY (Season_id) REFERENCES SEASONS(Season_id),
+Round_start date NOT NULL, 
+Round_end date NOT NULL
+);
+
+--13
+CREATE TABLE POINT_SYSTEM   
+(
+Transaction_id number(6) PRIMARY KEY,
+Player_id number(6) NOT NULL,
+    constraint Player_id_POINT_SYSTEM
+    FOREIGN KEY (Player_id) references PLAYER_STATS(Player_id),
+Event_id number(6) NOT NULL,
+    constraint Event_id_POINT_SYSTEM
+    FOREIGN KEY (Event_id) references GameRULES(Event_id),
+Round_id number(6) NOT NULL,
+    constraint Round_id_POINT_SYSTEM
+    FOREIGN KEY (Round_id) references ROUNDS(Round_id),
+Player_round_Points number(3) NOT NULL
+);
+
+
+--14
+CREATE TABLE TeamLeague 
+(
+Player_id number(6) UNIQUE, 
+CONSTRAINT Player_id_TeamLeague
+FOREIGN KEY (Player_id) references PLAYER_STATS(Player_id),
+Team_id number(6) NOT NULL UNIQUE, 
+CONSTRAINT Team_id_TeamLeague
+FOREIGN KEY (Team_id) references TEAMS(Team_id),
+League_id number(6) NOT NULL,
+CONSTRAINT League_id_TeamLeague
+FOREIGN KEY (League_id) references LEAGUES(League_id)
+);
+
+
+--15 
+--CREATE TABLE PLAYER_Team 
+--(
+--Player_id number(6) PRIMARY KEY,
+--CONSTRAINT Player_id_PLAYER_Team
+--FOREIGN KEY (Player_id) references PLAYER_STATS(Player_id),
+--TL_ID number(6) NOT NULL,
+--CONSTRAINT TL_ID_PLAYER_Team
+--FOREIGN KEY (TL_ID) references TeamLeague(TL_ID)
+--);
