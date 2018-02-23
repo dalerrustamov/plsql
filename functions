@@ -1,0 +1,41 @@
+1---------------------------------------------------------
+--This functions checks returns well-doing teams
+CREATE OR REPLACE FUNCTION TOP_TEAMS(TOP number)
+RETURN NUMBER
+AS
+BEGIN
+    IF TOP < 50 THEN 
+        RETURN TOP;
+    END IF;
+    END;
+    /
+
+select TEAM_WINS, TOP_TEAMS(TEAM_WINS)
+from TEAMS;
+2--------------------------------------------------------- 
+--This function returns the list of the currently logged in clients 
+CREATE OR REPLACE FUNCTION ACTIVE_USERS(ACTIVE number)
+RETURN NUMBER
+AS
+BEGIN
+    IF ACTIVE = 1 THEN 
+        RETURN ACTIVE;
+    END IF;
+    END;
+    /
+select CURRENTLY_ACTIVE, ACTIVE_USERS(CURRENTLY_ACTIVE)
+from USER_PRIVACY;
+3---------------------------------------------------------
+--This functions prints the list of the offers that are still pending
+CREATE OR REPLACE FUNCTION INPROGRESS_OFFERS(OFFER number)
+RETURN NUMBER
+AS
+BEGIN
+    IF OFFER = 0 THEN 
+        RETURN OFFER;
+    END IF;
+    END;
+    /
+
+select ACCEPTDECLINE, INPROGRESS_OFFERS(ACCEPTDECLINE)
+from TRADE;
