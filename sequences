@@ -1,0 +1,52 @@
+create SEQUENCE sRequest_ID
+    increment by 1
+    maxvalue 999999;
+insert into ACCOUNT_RECOVER (Request_ID) values (sRequest_ID.NEXTVAL);
+
+
+create SEQUENCE sPlayer_id
+    increment by 1
+    maxvalue 999999;
+insert into PLAYER_GameInfo (Player_id) values (sPlayer_id.NEXTVAL);
+
+
+create SEQUENCE sTeam_id 
+    increment by 1
+    maxvalue 999999;
+insert into TEAMS(Team_id) values (sTeam_id.NEXTVAL);
+
+
+create SEQUENCE sTrade_id 
+    increment by 1
+    maxvalue 999999;
+insert into TRADE(Trade_id) values (sTrade_id.NEXTVAL);
+
+
+create SEQUENCE sEvent_id
+    increment by 1
+    maxvalue 999999;
+insert into GameRULES(Event_id) values (sEvent_id.NEXTVAL);
+
+
+create SEQUENCE sLeague_id 
+    increment by 1
+    maxvalue 999999;
+insert into LEAGUES(League_id) values (sLeague_id.NEXTVAL);
+
+
+create SEQUENCE sSeason_id
+    increment by 1
+    maxvalue 999999;
+insert into SEASONS(Season_id) values (sSeason_id.NEXTVAL);
+
+
+create SEQUENCE sRound_id
+    increment by 1
+    maxvalue 999999;
+insert into ROUNDS(Round_id) values (sRound_id.NEXTVAL);
+
+
+create SEQUENCE sTransaction_id
+    increment by 1
+    maxvalue 999999;
+insert into POINT_SYSTEM(Transaction_id) values (sTransaction_id.NEXTVAL);
